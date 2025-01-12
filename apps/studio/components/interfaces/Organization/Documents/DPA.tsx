@@ -1,9 +1,11 @@
+import { ExternalLink } from 'lucide-react'
+
 import {
   ScaffoldSection,
   ScaffoldSectionContent,
   ScaffoldSectionDetail,
 } from 'components/layouts/Scaffold'
-import { Button, IconExternalLink } from 'ui'
+import { Button } from 'ui'
 
 const DPA = () => {
   return (
@@ -12,8 +14,13 @@ const DPA = () => {
         <p className="text-base m-0">Data Processing Addendum (DPA)</p>
         <div className="space-y-2 text-sm text-foreground-light m-0">
           <p>
-            All organizations can access and use our DPA as part of their GDPR compliance. Sign and
-            return the signed DPA document to{' '}
+            All organizations can access and use our DPA as part of their GDPR compliance. This is
+            only to access the document. Please ignore this if you have sent the signed document to
+            us.
+          </p>
+          <p>
+            Please review these details and add data specific to user processing where required.
+            Sign and return the signed DPA document to{' '}
             <a
               href="mailto:privacy@supabase.com"
               target="_blank"
@@ -23,23 +30,19 @@ const DPA = () => {
             </a>{' '}
             for the document to be considered executed.
           </p>
-          <p>
-            This is only to access the document. Please ignore this if you have sent the signed
-            document to us.
-          </p>
         </div>
       </ScaffoldSectionDetail>
       <ScaffoldSectionContent className="flex items-center justify-center h-full">
-        <a
-          href="https://supabase.com/downloads/docs/Supabase+DPA+231211.pdf"
-          target="_blank"
-          rel="noreferrer noopener"
-          download={true}
-        >
-          <Button type="default" iconRight={<IconExternalLink />}>
+        <Button asChild type="default" iconRight={<ExternalLink />}>
+          <a
+            download={true}
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://supabase.com/downloads/docs/Supabase+DPA+231211.pdf"
+          >
             View DPA
-          </Button>
-        </a>
+          </a>
+        </Button>
       </ScaffoldSectionContent>
     </ScaffoldSection>
   )

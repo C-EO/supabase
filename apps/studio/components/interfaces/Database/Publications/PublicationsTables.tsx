@@ -7,12 +7,13 @@ import NoSearchResults from 'components/to-be-cleaned/NoSearchResults'
 import Table from 'components/to-be-cleaned/Table'
 import AlertError from 'components/ui/AlertError'
 import InformationBox from 'components/ui/InformationBox'
-import Connecting from 'components/ui/Loading/Loading'
+import { Loading } from 'components/ui/Loading'
 import { useTablesQuery } from 'data/tables/tables-query'
-import { useCheckPermissions } from 'hooks'
-import { EXCLUDED_SCHEMAS } from 'lib/constants/schemas'
-import { Button, IconAlertCircle, IconChevronLeft, IconSearch, Input } from 'ui'
+import { useCheckPermissions } from 'hooks/misc/useCheckPermissions'
+import { PROTECTED_SCHEMAS } from 'lib/constants/schemas'
+import { Button, Input } from 'ui'
 import PublicationsTableItem from './PublicationsTableItem'
+import { ChevronLeft, Search, AlertCircle } from 'lucide-react'
 
 interface PublicationsTablesProps {
   selectedPublication: PostgresPublication
@@ -43,39 +44,12 @@ const PublicationsTables = ({ selectedPublication, onSelectBack }: PublicationsT
       select(tables) {
         return tables.filter((table) =>
           filterString.length === 0
-            ? !EXCLUDED_SCHEMAS.includes(table.schema)
-            : !EXCLUDED_SCHEMAS.includes(table.schema) && table.name.includes(filterString)
+            ? !PROTECTED_SCHEMAS.includes(table.schema)
+            : !PROTECTED_SCHEMAS.includes(table.schema) && table.name.includes(filterString)
         )
       },
     }
   )
-
-  // const publication = selectedPublication
-  // const enabledForAllTables = publication.tables == null
-
-  // const toggleReplicationForAllTables = async (publication: any, disable: boolean) => {
-  //   const toggle = disable ? 'disable' : 'enable'
-  //   ConfirmAlert({
-  //     title: 'Confirm',
-  //     type: 'warn',
-  //     message: `Are you sure you want to ${toggle} replication for all tables in ${publication.name}?`,
-  //     onAsyncConfirm: async () => {
-  //       try {
-  //         const res: any = await meta.publications.recreate(publication.id)
-  //         if (res.error) {
-  //           throw res.error
-  //         } else {
-  //           onPublicationUpdated(res)
-  //         }
-  //       } catch (error: any) {
-  //         ui.setNotification({
-  //           category: 'error',
-  //           message: `Failed to toggle replication for all tables: ${error.message}`,
-  //         })
-  //       }
-  //     },
-  //   })
-  // }
 
   return (
     <>
@@ -85,7 +59,7 @@ const PublicationsTables = ({ selectedPublication, onSelectBack }: PublicationsT
             <Button
               type="outline"
               onClick={() => onSelectBack()}
-              icon={<IconChevronLeft />}
+              icon={<ChevronLeft />}
               style={{ padding: '5px' }}
             />
             <div>
@@ -94,14 +68,14 @@ const PublicationsTables = ({ selectedPublication, onSelectBack }: PublicationsT
                 placeholder={'Filter'}
                 value={filterString}
                 onChange={(e) => setFilterString(e.target.value)}
-                icon={<IconSearch size="tiny" />}
+                icon={<Search size="14" />}
               />
             </div>
           </div>
           {!canUpdatePublications && (
             <div className="w-[500px]">
               <InformationBox
-                icon={<IconAlertCircle className="text-foreground-light" strokeWidth={2} />}
+                icon={<AlertCircle className="text-foreground-light" strokeWidth={2} />}
                 title="You need additional permissions to update database replications"
               />
             </div>
@@ -110,7 +84,7 @@ const PublicationsTables = ({ selectedPublication, onSelectBack }: PublicationsT
       </div>
       {isLoading && (
         <div className="mt-8">
-          <Connecting />
+          <Loading />
         </div>
       )}
 
@@ -145,7 +119,7 @@ const PublicationsTables = ({ selectedPublication, onSelectBack }: PublicationsT
               </div> */}
                 </Table.th>,
               ]}
-              body={tables.map((table: any, i: number) => (
+              body={tables.map((table) => (
                 <PublicationsTableItem
                   key={table.id}
                   table={table}

@@ -1,10 +1,9 @@
-import { observer } from 'mobx-react-lite'
+import { useParams } from 'common'
 
-import { NextPageWithLayout } from 'types'
-import { useParams } from 'common/hooks'
 import LogsPreviewer from 'components/interfaces/Settings/Logs/LogsPreviewer'
-import FunctionsLayout from 'components/layouts/FunctionsLayout'
+import FunctionsLayout from 'components/layouts/FunctionsLayout/FunctionsLayout'
 import { useEdgeFunctionQuery } from 'data/edge-functions/edge-function-query'
+import type { NextPageWithLayout } from 'types'
 
 /**
  * Placeholder page for logs previewers until we figure out where to slot them
@@ -20,13 +19,15 @@ export const LogPage: NextPageWithLayout = () => {
 
   return (
     <LogsPreviewer
+      condensedLayout
       projectRef={ref as string}
       queryType={'fn_edge'}
       filterOverride={{ function_id: selectedFunction.id }}
+      filterPanelClassName="px-0"
     />
   )
 }
 
 LogPage.getLayout = (page) => <FunctionsLayout>{page}</FunctionsLayout>
 
-export default observer(LogPage)
+export default LogPage

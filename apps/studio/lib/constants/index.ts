@@ -1,10 +1,10 @@
+// Ignore barrel file rule here since it's just exporting more constants
+// eslint-disable-next-line barrel-files/avoid-re-export-all
 export * from './infrastructure'
-export * from './metrics'
 
 export const IS_PLATFORM = process.env.NEXT_PUBLIC_IS_PLATFORM === 'true'
 export const DEFAULT_HOME = IS_PLATFORM ? '/projects' : '/project/default'
 export const API_URL = IS_PLATFORM ? process.env.NEXT_PUBLIC_API_URL : '/api'
-export const API_ADMIN_URL = IS_PLATFORM ? process.env.NEXT_PUBLIC_API_ADMIN_URL : undefined
 export const PG_META_URL = IS_PLATFORM
   ? process.env.PLATFORM_PG_META_URL
   : process.env.STUDIO_PG_META_URL
@@ -18,72 +18,6 @@ export const DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ'
 // should be used for all dayjs formattings shown to the user. Includes timezone info.
 export const DATETIME_FORMAT = 'DD MMM YYYY, HH:mm:ss (ZZ)'
 
-// Keyboard Shortcuts Related
-export const SHORTCUT_KEYS = {
-  VIEW_ALL_SHORTCUTS: 'VIEW_ALL_SHORTCUTS',
-  TOGGLE_FILTER_MENU: 'TOGGLE_FILTER_MENU',
-  TOGGLE_SORT_MENU: 'TOGGLE_SORT_MENU',
-  CLOSE_SIDE_PANEL: 'CLOSE_SIDE_PANEL',
-  EDIT_CELL: 'EDIT_CELL',
-  COPY_CELL: 'COPY_CELL',
-  PASTE_CELL: 'PASTE_CELL',
-  CREATE_ROW: 'CREATE_ROW',
-  EDIT_ROW: 'EDIT_ROW',
-  DELETE_ROW: 'DELETE_ROW',
-  SCROLL_EDGES: 'SCROLL_EDGES',
-}
-
-export const GENERAL_SHORTCUTS = [
-  {
-    key: SHORTCUT_KEYS.VIEW_ALL_SHORTCUTS,
-    name: 'View all shortcuts',
-    keys: ['Shift+/'],
-  },
-  {
-    key: SHORTCUT_KEYS.CLOSE_SIDE_PANEL,
-    name: 'Close side panel',
-    keys: ['Esc'],
-  },
-]
-
-export const generateEditorShortcuts = (clientOS: string) => {
-  const metaKey = clientOS === 'windows' ? 'Ctrl' : '⌘'
-  return [
-    {
-      key: SHORTCUT_KEYS.EDIT_CELL,
-      name: 'Edit current cell',
-      keys: ['Enter'],
-    },
-    {
-      key: SHORTCUT_KEYS.COPY_CELL,
-      name: 'Copy value of current cell',
-      keys: [`${metaKey}+C`],
-    },
-    {
-      key: SHORTCUT_KEYS.PASTE_CELL,
-      name: 'Paste value into current cell',
-      keys: [`${metaKey}+V`],
-    },
-    {
-      key: SHORTCUT_KEYS.CREATE_ROW,
-      name: 'Create a new row',
-      keys: ['Shift+Enter'],
-    },
-    {
-      key: SHORTCUT_KEYS.SCROLL_EDGES,
-      name: 'Scroll to edges of the table',
-      keys: [`${metaKey}+↑`, `${metaKey}+→`, `${metaKey}+↓`, `${metaKey}+←`],
-    },
-  ]
-}
-
-export const POLICY_MODAL_VIEWS = {
-  SELECTION: 'SELECTION',
-  TEMPLATES: 'TEMPLATES',
-  EDITOR: 'EDITOR',
-  REVIEW: 'REVIEW',
-}
-
 export const GOTRUE_ERRORS = {
   UNVERIFIED_GITHUB_USER: 'Error sending confirmation mail',
 }
@@ -95,16 +29,57 @@ export const USAGE_APPROACHING_THRESHOLD = 0.75
 
 export const LOCAL_STORAGE_KEYS = {
   RECENTLY_VISITED_ORGANIZATION: 'supabase-organization',
-  TELEMETRY_CONSENT: 'supabase-consent',
+
+  AI_ASSISTANT_STATE: 'supabase-ai-assistant-state',
+
   UI_PREVIEW_NAVIGATION_LAYOUT: 'supabase-ui-preview-nav-layout',
   UI_PREVIEW_API_SIDE_PANEL: 'supabase-ui-api-side-panel',
-  UI_PREVIEW_RLS_AI_ASSISTANT: 'supabase-ui-rls-ai-assistant',
+  UI_PREVIEW_CLS: 'supabase-ui-cls',
+  UI_ONBOARDING_NEW_PAGE_SHOWN: 'supabase-ui-onboarding-new-page-shown',
+
+  SQL_SCRATCH_PAD_BANNER_ACKNOWLEDGED: 'supabase-sql-scratch-pad-banner-acknowledged',
+
   DASHBOARD_HISTORY: (ref: string) => `dashboard-history-${ref}`,
+
+  SQL_EDITOR_INTELLISENSE: 'supabase_sql-editor-intellisense-enabled',
+  SQL_EDITOR_SPLIT_SIZE: 'supabase_sql-editor-split-size',
+  SQL_EDITOR_AI_PANEL_SPLIT_SIZE: 'supabase_sql-editor-ai-panel-split-size',
+  // Key to track which schemas are ok to be sent to AI. The project ref is intentionally put at the end for easier search in the browser console.
+  SQL_EDITOR_AI_SCHEMA: (ref: string) => `supabase_sql-editor-ai-schema-enabled-${ref}`,
+  SQL_EDITOR_AI_OPEN: 'supabase_sql-editor-ai-open',
+  SQL_EDITOR_LAST_SELECTED_DB: (ref: string) => `sql-editor-last-selected-db-${ref}`,
+  LOG_EXPLORER_SPLIT_SIZE: 'supabase_log-explorer-split-size',
+  GRAPHIQL_RLS_BYPASS_WARNING: 'graphiql-rls-bypass-warning-dismissed',
+  CLS_DIFF_WARNING: 'cls-diff-warning-dismissed',
+  CLS_SELECT_STAR_WARNING: 'cls-select-star-warning-dismissed',
+  PROJECT_LINT_IGNORE_LIST: 'supabase-project-lint-ignore-list',
+  QUERY_PERF_SHOW_BOTTOM_SECTION: 'supabase-query-perf-show-bottom-section',
+  // Key to track account deletion requests
+  ACCOUNT_DELETION_REQUEST: 'supabase-account-deletion-request',
+  // Used for storing a user id when sending reports to Sentry. The id is hashed for anonymity.
+  SENTRY_USER_ID: 'supabase-sentry-user-id',
+  // Used for storing the last sign in method used by the user
+  LAST_SIGN_IN_METHOD: 'supabase-last-sign-in-method',
+  // Key to track the last selected schema. The project ref is intentionally put at the end for easier search in the browser console.
+  LAST_SELECTED_SCHEMA: (ref: string) => `last-selected-schema-${ref}`,
+  // Key to show a warning on the SQL Editor AI Assistant that the org hasn't opted-in to sending anon data
+  SHOW_AI_NOT_OPTIMIZED_WARNING: (ref: string) => `supabase-show-ai-not-optimized-${ref}`,
+  // Track position of nodes for schema visualizer
+  SCHEMA_VISUALIZER_POSITIONS: (ref: string, schemaId: number) =>
+    `schema-visualizer-positions-${ref}-${schemaId}`,
+  // Used for allowing the main nav panel to expand on hover
+  EXPAND_NAVIGATION_PANEL: 'supabase-expand-navigation-panel',
+  GITHUB_AUTHORIZATION_STATE: 'supabase-github-authorization-state',
+  // Notice banner keys
+  AUTH_SMTP_CHANGES_WARNING: 'auth-smtp-changes-warning-dismissed',
+
+  AUTH_USERS_COLUMNS_CONFIGURATION: (ref: string) => `supabase-auth-users-columns-${ref}`,
 }
 
 export const OPT_IN_TAGS = {
   AI_SQL: 'AI_SQL_GENERATOR_OPT_IN',
-  PREVIEW_BRANCHES: 'PREVIEW_BRANCHES_OPT_IN',
 }
 
 export const GB = 1024 * 1024 * 1024
+export const MB = 1024 * 1024
+export const KB = 1024

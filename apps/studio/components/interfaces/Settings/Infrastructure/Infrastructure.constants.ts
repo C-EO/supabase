@@ -58,7 +58,7 @@ export const INFRA_ACTIVITY_METRICS: CategoryMeta[] = [
         name: 'Memory',
         unit: 'percentage',
         description:
-          'Memory usage of your server.\nYou might observe elevated memory usage, even with little to no load. Besides Postgres, a wide range of services is running under the hood resulting in an elevated base memory usage.',
+          'Memory usage of your server.\nYou might observe elevated memory usage, even with little to no load. Besides Postgres, a wide range of services are running under the hood resulting in an elevated base memory usage.',
         chartDescription: '',
         links: [
           {
@@ -84,12 +84,16 @@ export const INFRA_ACTIVITY_METRICS: CategoryMeta[] = [
             url: 'https://supabase.com/docs/guides/platform/compute-add-ons#disk-throughput-and-iops',
           },
           {
+            name: 'Interpreting Disk IO budget',
+            url: 'https://supabase.com/docs/guides/platform/compute-add-ons#bursting-and-disk-io-budget',
+          },
+          {
             name: 'Metrics',
             url: 'https://supabase.com/docs/guides/platform/metrics',
           },
         ],
         description:
-          'The disk performance of your workload is determined by the Disk IO bandwidth.\nSmaller compute instances (below 4XL) can burst up to their largest throughput and IOPS for 30 minutes in a day. Beyond that, the performance reverts to the baseline. Your disk budget gets replenished throughout the day.',
+          'The disk performance of your workload is determined by the Disk IO bandwidth.\nSmaller compute instances (below 4XL) can burst up to their largest throughput and IOPS for 30 minutes in a day. Beyond that, the performance reverts to the baseline. Your disk IO budget gets replenished throughout the day.',
         chartDescription: '',
       },
     ],

@@ -1,12 +1,11 @@
-import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
-import { IconChevronRight } from 'ui'
 
-import { useFlag, withAuth } from 'hooks'
+import { withAuth } from 'hooks/misc/withAuth'
 import { BASE_PATH } from 'lib/constants'
-import { Organization, Project } from 'types'
-import FeedbackDropdown from './ProjectLayout/LayoutHeader/FeedbackDropdown'
+import { ChevronRight } from 'lucide-react'
+import type { Organization, Project } from 'types'
+import { FeedbackDropdown } from './ProjectLayout/LayoutHeader/FeedbackDropdown'
 import HelpPopover from './ProjectLayout/LayoutHeader/HelpPopover'
 
 interface WizardLayoutProps {
@@ -19,11 +18,8 @@ const WizardLayout = ({
   project,
   children,
 }: PropsWithChildren<WizardLayoutProps>) => {
-  const ongoingIncident = useFlag('ongoingIncident')
-  const maxHeight = ongoingIncident ? 'calc(100vh - 44px)' : '100vh'
-
   return (
-    <div className="flex w-full flex-col" style={{ height: maxHeight, maxHeight }}>
+    <div className="flex w-full flex-col">
       <Header organization={organization} project={project} />
       <div className="overflow-auto">
         <section className="has-slide-in slide-in relative mx-auto my-10 max-w-2xl">
@@ -34,9 +30,9 @@ const WizardLayout = ({
   )
 }
 
-export default withAuth(observer(WizardLayout))
+export default withAuth(WizardLayout)
 
-export const WizardLayoutWithoutAuth = observer(WizardLayout)
+export const WizardLayoutWithoutAuth = WizardLayout
 
 const Header = ({ organization, project }: WizardLayoutProps) => {
   let stepNumber = organization ? 1 : project ? 2 : 0
@@ -54,17 +50,13 @@ const Header = ({ organization, project }: WizardLayoutProps) => {
                   style={{ height: 24 }}
                 />
               </Link>
-              <IconChevronRight size="small" className="text-foreground-light" />
+              <ChevronRight size="18" className="text-foreground-light" strokeWidth={1} />
               <p className="text-sm">
                 {organization ? `Organization: ${organization.name}` : 'Create an organization'}
               </p>
-              <IconChevronRight size="small" className="text-foreground-light" />
+              <ChevronRight size="18" className="text-foreground-light" strokeWidth={1} />
               <p className={`text-sm ${stepNumber < 1 ? 'text-foreground-light' : ''}`}>
                 {project ? project.name : 'Create a new project'}
-              </p>
-              <IconChevronRight size="small" className="text-foreground-light" />
-              <p className={`text-sm ${stepNumber < 2 ? 'text-foreground-light' : ''}`}>
-                {project ? project.name : 'Extend your database'}
               </p>
             </div>
           </div>

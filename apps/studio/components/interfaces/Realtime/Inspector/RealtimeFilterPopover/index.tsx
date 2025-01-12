@@ -1,5 +1,8 @@
 import { PlusCircle } from 'lucide-react'
+import Link from 'next/link'
 import { Dispatch, SetStateAction, useState } from 'react'
+
+import { useSendEventMutation } from 'data/telemetry/send-event-mutation'
 import {
   Badge,
   Button,
@@ -13,12 +16,11 @@ import {
   Toggle,
   cn,
 } from 'ui'
-
-import Link from 'next/link'
-import { ApplyConfigModal } from '../ApplyConfigModal'
+import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
 import { RealtimeConfig } from '../useRealtimeMessages'
 import { FilterSchema } from './FilterSchema'
-import { TableSchema } from './TableSchema'
+import { FilterTable } from './FilterTable'
+import { TelemetryActions } from 'lib/constants/telemetry'
 
 interface RealtimeFilterPopoverProps {
   config: RealtimeConfig
@@ -30,6 +32,8 @@ export const RealtimeFilterPopover = ({ config, onChangeConfig }: RealtimeFilter
   const [applyConfigOpen, setApplyConfigOpen] = useState(false)
   const [tempConfig, setTempConfig] = useState(config)
 
+  const { mutate: sendEvent } = useSendEventMutation()
+
   const onOpen = (v: boolean) => {
     // when opening, copy the outside config into the intermediate one
     if (v === true) {
@@ -40,7 +44,7 @@ export const RealtimeFilterPopover = ({ config, onChangeConfig }: RealtimeFilter
 
   // [Joshen] Restricting the schemas to only public as any other schema won’t work out of the box due to missing permissions
   // Consequently, SchemaSelector here will also be disabled
-  const isFiltered = config.schema !== 'public'
+  const isFiltered = config.table !== '*'
 
   return (
     <>
@@ -55,20 +59,11 @@ export const RealtimeFilterPopover = ({ config, onChangeConfig }: RealtimeFilter
             {isFiltered ? (
               <>
                 <span className="mr-1">Filtered by </span>
-                <Badge className="!bg-brand-400 !text-brand-600">
-                  schema: {config.schema === '*' ? 'All schemas' : config.schema}
-                </Badge>
+                <Badge variant="brand">table: {config.table}</Badge>
               </>
             ) : (
               <span className="mr-1">Filter messages</span>
             )}
-
-            {config.table !== '*' ? (
-              <>
-                <span> and </span>
-                <Badge className="!bg-brand-400 !text-brand-600">table: {config.table}</Badge>
-              </>
-            ) : null}
           </Button>
         </PopoverTrigger_Shadcn_>
         <PopoverContent_Shadcn_ className="p-0 w-[365px]" align="start">
@@ -159,7 +154,7 @@ export const RealtimeFilterPopover = ({ config, onChangeConfig }: RealtimeFilter
                   onChange={(v) => setTempConfig({ ...tempConfig, schema: v, table: '*' })}
                 />
 
-                <TableSchema
+                <FilterTable
                   value={tempConfig.table}
                   schema={tempConfig.schema}
                   onChange={(table) => setTempConfig({ ...tempConfig, table })}
@@ -198,15 +193,25 @@ export const RealtimeFilterPopover = ({ config, onChangeConfig }: RealtimeFilter
           </div>
         </PopoverContent_Shadcn_>
       </Popover_Shadcn_>
-      <ApplyConfigModal
+      <ConfirmationModal
+        title="Previously found messages will be lost"
+        variant="destructive"
+        confirmLabel="Confirm"
+        size="small"
         visible={applyConfigOpen}
-        onSelectCancel={() => setApplyConfigOpen(false)}
-        onSelectConfirm={() => {
+        onCancel={() => setApplyConfigOpen(false)}
+        onConfirm={() => {
+          sendEvent({ action: TelemetryActions.REALTIME_INSPECTOR_FILTERS_APPLIED })
           onChangeConfig(tempConfig)
           setApplyConfigOpen(false)
           setOpen(false)
         }}
-      />
+      >
+        <p className="text-sm text-foreground-light">
+          The realtime inspector will clear currently collected messages and start listening for new
+          messages matching the updated filters.
+        </p>
+      </ConfirmationModal>
     </>
   )
 }
