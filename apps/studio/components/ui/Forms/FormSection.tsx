@@ -15,7 +15,7 @@ const FormSection = ({
   className?: string
 }) => {
   const classes = [
-    'grid grid-cols-12 gap-6 px-8 py-8',
+    'grid grid-cols-12 gap-6 px-4 md:px-8 py-4 md:py-8',
     `${disabled ? ' opacity-30' : ' opacity-100'}`,
     `${className}`,
   ]
@@ -81,7 +81,7 @@ const FormSectionContent = ({
         ${className}
       `}
     >
-      {loading ? Children.map(children, (child) => <Shimmer />) : children}
+      {loading ? Children.map(children, () => <Shimmer />) : children}
     </div>
   )
 }

@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { get } from 'lib/common/fetch'
 import { API_URL } from 'lib/constants'
-import { useCallback } from 'react'
 import { configKeys } from './keys'
+import { ResponseError } from 'types'
 
 export type ProjectPostgrestConfigVariables = {
   projectRef?: string
@@ -14,6 +14,7 @@ export type ProjectPostgrestConfigResponse = {
   db_schema: string
   db_anon_role: string
   db_extra_search_path: string
+  db_pool: number | null
   jwt_secret: string
 }
 
@@ -36,7 +37,7 @@ export async function getProjectPostgrestConfig(
 }
 
 export type ProjectPostgrestConfigData = Awaited<ReturnType<typeof getProjectPostgrestConfig>>
-export type ProjectPostgrestConfigError = unknown
+export type ProjectPostgrestConfigError = ResponseError
 
 export const useProjectPostgrestConfigQuery = <TData = ProjectPostgrestConfigData>(
   { projectRef }: ProjectPostgrestConfigVariables,
@@ -53,17 +54,3 @@ export const useProjectPostgrestConfigQuery = <TData = ProjectPostgrestConfigDat
       ...options,
     }
   )
-
-export const useProjectPostgrestConfigPrefetch = ({
-  projectRef,
-}: ProjectPostgrestConfigVariables) => {
-  const client = useQueryClient()
-
-  return useCallback(() => {
-    if (projectRef) {
-      client.prefetchQuery(configKeys.postgrest(projectRef), ({ signal }) =>
-        getProjectPostgrestConfig({ projectRef }, signal)
-      )
-    }
-  }, [projectRef])
-}

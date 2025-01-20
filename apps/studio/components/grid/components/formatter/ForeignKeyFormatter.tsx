@@ -1,30 +1,36 @@
-import * as Tooltip from '@radix-ui/react-tooltip'
-import Link from 'next/link'
-import { PropsWithChildren } from 'react'
-import { RenderCellProps } from 'react-data-grid'
+import { ArrowRight } from 'lucide-react'
+import type { PropsWithChildren } from 'react'
+import type { RenderCellProps } from 'react-data-grid'
 
-import { useParams } from 'common/hooks'
 import { useProjectContext } from 'components/layouts/ProjectLayout/ProjectContext'
-import { useTableQuery } from 'data/tables/table-query'
+import { EditorTablePageLink } from 'data/prefetchers/project.$ref.editor.$id'
+import { useTableEditorQuery } from 'data/table-editor/table-editor-query'
+import { isTableLike } from 'data/table-editor/table-editor-types'
 import { useTablesQuery } from 'data/tables/tables-query'
-import { Button, IconArrowRight } from 'ui'
-import { SupaRow } from '../../types'
-import { NullValue } from '../common'
+import { useQuerySchemaState } from 'hooks/misc/useSchemaQueryState'
+import { Button, Tooltip_Shadcn_, TooltipContent_Shadcn_, TooltipTrigger_Shadcn_ } from 'ui'
+import type { SupaRow } from '../../types'
+import { NullValue } from '../common/NullValue'
 
-export const ForeignKeyFormatter = (
-  props: PropsWithChildren<RenderCellProps<SupaRow, unknown>>
-) => {
+interface Props extends PropsWithChildren<RenderCellProps<SupaRow, unknown>> {
+  projectRef?: string
+  tableId?: string
+}
+
+export const ForeignKeyFormatter = (props: Props) => {
   const { project } = useProjectContext()
-  const { ref: projectRef, id: _id } = useParams()
-  const id = _id ? Number(_id) : undefined
+  const { selectedSchema } = useQuerySchemaState()
 
-  const { row, column } = props
+  const { projectRef, tableId, row, column } = props
+  const id = tableId ? Number(tableId) : undefined
 
-  const { data: selectedTable } = useTableQuery({
+  const { data } = useTableEditorQuery({
     projectRef: project?.ref,
     connectionString: project?.connectionString,
     id,
   })
+  const selectedTable = isTableLike(data) ? data : undefined
+
   const relationship = (selectedTable?.relationships ?? []).find(
     (r) =>
       r.source_schema === selectedTable?.schema &&
@@ -50,39 +56,33 @@ export const ForeignKeyFormatter = (
         {value === null ? <NullValue /> : value}
       </span>
       {relationship !== undefined && targetTable !== undefined && value !== null && (
-        <Tooltip.Root delayDuration={0}>
-          <Tooltip.Trigger asChild>
+        <Tooltip_Shadcn_>
+          <TooltipTrigger_Shadcn_ asChild>
             <Button
+              asChild
               type="default"
               size="tiny"
               className="translate-y-[2px]"
-              onClick={() => {}}
               style={{ padding: '3px' }}
-              asChild
             >
-              <Link
-                href={`/project/${projectRef}/editor/${targetTable?.id}?filter=${relationship?.target_column_name}%3Aeq%3A${value}`}
+              <EditorTablePageLink
+                href={`/project/${projectRef}/editor/${targetTable?.id}?schema=${selectedSchema}&filter=${relationship?.target_column_name}%3Aeq%3A${value}`}
+                projectRef={projectRef}
+                id={targetTable && String(targetTable?.id)}
+                filters={[
+                  {
+                    column: relationship.target_column_name,
+                    operator: '=',
+                    value: String(value),
+                  },
+                ]}
               >
-                <IconArrowRight size="tiny" />
-              </Link>
+                <ArrowRight size={14} />
+              </EditorTablePageLink>
             </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Portal>
-              <Tooltip.Content side="bottom">
-                <Tooltip.Arrow className="radix-tooltip-arrow" />
-                <div
-                  className={[
-                    'rounded bg-alternative py-1 px-2 leading-none shadow',
-                    'border border-background',
-                  ].join(' ')}
-                >
-                  <span className="text-xs text-foreground">View referencing record</span>
-                </div>
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Portal>
-        </Tooltip.Root>
+          </TooltipTrigger_Shadcn_>
+          <TooltipContent_Shadcn_ side="bottom">View referencing record</TooltipContent_Shadcn_>
+        </Tooltip_Shadcn_>
       )}
     </div>
   )

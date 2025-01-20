@@ -3,12 +3,14 @@ import { useProjectDetailQuery } from 'data/projects/project-detail-query'
 import { useProjectsQuery } from 'data/projects/projects-query'
 import { useMemo } from 'react'
 
-export function useSelectedProject() {
+export function useSelectedProject({ enabled = true } = {}) {
   const { ref } = useParams()
-  const { data } = useProjectDetailQuery({ ref })
+  const { data } = useProjectDetailQuery({ ref }, { enabled })
 
-  if (data) return { ...data, parentRef: data?.parent_project_ref ?? data?.ref ?? undefined }
-  return data
+  return useMemo(
+    () => data && { ...data, parentRef: data?.parent_project_ref ?? data?.ref },
+    [data]
+  )
 }
 
 export function useProjectByRef(ref?: string) {
@@ -18,4 +20,10 @@ export function useProjectByRef(ref?: string) {
     if (!ref) return undefined
     return projects?.find((project) => project.ref === ref)
   }, [projects, ref])
+}
+
+export const useIsOrioleDb = () => {
+  const project = useSelectedProject()
+  const isOrioleDb = project?.dbVersion?.endsWith('orioledb')
+  return isOrioleDb
 }

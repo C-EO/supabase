@@ -1,4 +1,4 @@
-import { Datum } from 'components/ui/Charts/Charts.types'
+import type { Datum } from 'components/ui/Charts/Charts.types'
 import React from 'react'
 
 interface Metadata {
@@ -51,7 +51,8 @@ export interface CountData {
 }
 
 export interface EventChartData extends Datum {
-  count: number
+  error_count: number
+  ok_count: number
   timestamp: string
 }
 
@@ -86,8 +87,9 @@ export type QueryType =
   | 'realtime'
   | 'storage'
   | 'supavisor'
-  | 'pgbouncer'
   | 'postgrest'
+  | 'warehouse'
+  | 'pg_cron'
 
 export type Mode = 'simple' | 'custom'
 
@@ -137,4 +139,10 @@ export interface DatetimeHelper {
   calcFrom: () => string
   default?: boolean
   disabled?: boolean
+}
+
+export interface WarehouseCollection {
+  name: string
+  id: number
+  token: string
 }

@@ -1,5 +1,3 @@
-import AccountInformation from './AccountInformation'
-import AnalyticsSettings from './AnalyticsSettings'
-import ThemeSettings from './ThemeSettings'
-
-export { AccountInformation, AnalyticsSettings, ThemeSettings }
+export { default as AccountInformation } from './AccountInformation'
+export { default as AnalyticsSettings } from './AnalyticsSettings'
+export { default as ThemeSettings } from './ThemeSettings'

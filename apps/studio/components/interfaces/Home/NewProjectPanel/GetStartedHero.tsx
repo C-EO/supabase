@@ -1,6 +1,6 @@
 const GetStartedHero = () => {
   return (
-    <div className="w-full h-full relative pointer-events-none">
+    <div className="w-full max-w-[500px] h-full pb-10 lg:pb-0 relative pointer-events-none">
       <div
         className={[
           'w-[290px] lg:w-[400px] h-[180px] bg-alternative border border-default',
@@ -74,7 +74,7 @@ const GetStartedHero = () => {
             <p className="text-xs">iso2</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -88,7 +88,7 @@ const GetStartedHero = () => {
             <p className="text-xs">AO</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -102,7 +102,7 @@ const GetStartedHero = () => {
             <p className="text-xs">TL</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -116,7 +116,7 @@ const GetStartedHero = () => {
             <p className="text-xs">RS</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -130,7 +130,7 @@ const GetStartedHero = () => {
             <p className="text-xs">BS</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -144,7 +144,7 @@ const GetStartedHero = () => {
             <p className="text-xs">CL</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>
@@ -158,7 +158,7 @@ const GetStartedHero = () => {
             <p className="text-xs">DK</p>
           </div>
         </div>
-        <div className="h-[30px] flex items-center bg-background border-b border-default">
+        <div className="h-[30px] flex items-center bg-studio border-b border-default">
           <div className="w-[10%] h-full flex items-center border-r border-default px-2">
             <div className="w-3 h-3 rounded border border-control" />
           </div>

@@ -1,8 +1,9 @@
-import { UseQueryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useCallback } from 'react'
+import { UseQueryOptions, useQuery } from '@tanstack/react-query'
 
-import { get } from 'data/fetchers'
-import { ResponseError } from 'types'
+import { get, handleError } from 'data/fetchers'
+import { useSelectedProject } from 'hooks/misc/useSelectedProject'
+import { PROJECT_STATUS } from 'lib/constants'
+import type { ResponseError } from 'types'
 import { databasePoliciesKeys } from './keys'
 
 export type DatabasePoliciesVariables = {
@@ -13,11 +14,12 @@ export type DatabasePoliciesVariables = {
 
 export async function getDatabasePolicies(
   { projectRef, connectionString, schema }: DatabasePoliciesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  headersInit?: HeadersInit
 ) {
   if (!projectRef) throw new Error('projectRef is required')
 
-  let headers = new Headers()
+  let headers = new Headers(headersInit)
   if (connectionString) headers.set('x-connection-encrypted', connectionString)
 
   const { data, error } = await get('/platform/pg-meta/{ref}/policies', {
@@ -33,7 +35,7 @@ export async function getDatabasePolicies(
     signal,
   })
 
-  if (error) throw error
+  if (error) handleError(error)
   return data
 }
 
@@ -46,28 +48,16 @@ export const useDatabasePoliciesQuery = <TData = DatabasePoliciesData>(
     enabled = true,
     ...options
   }: UseQueryOptions<DatabasePoliciesData, DatabasePoliciesError, TData> = {}
-) =>
-  useQuery<DatabasePoliciesData, DatabasePoliciesError, TData>(
+) => {
+  const project = useSelectedProject()
+  const isActive = project?.status === PROJECT_STATUS.ACTIVE_HEALTHY
+
+  return useQuery<DatabasePoliciesData, DatabasePoliciesError, TData>(
     databasePoliciesKeys.list(projectRef, schema),
     ({ signal }) => getDatabasePolicies({ projectRef, connectionString, schema }, signal),
     {
-      enabled: enabled && typeof projectRef !== 'undefined',
+      enabled: enabled && typeof projectRef !== 'undefined' && isActive,
       ...options,
     }
   )
-
-export const useDatabasePoliciesPrefetch = ({
-  projectRef,
-  connectionString,
-  schema,
-}: DatabasePoliciesVariables) => {
-  const client = useQueryClient()
-
-  return useCallback(() => {
-    if (projectRef) {
-      client.prefetchQuery(databasePoliciesKeys.list(projectRef, schema), ({ signal }) =>
-        getDatabasePolicies({ projectRef, connectionString, schema }, signal)
-      )
-    }
-  }, [projectRef])
 }

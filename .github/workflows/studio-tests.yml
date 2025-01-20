@@ -8,12 +8,12 @@ on:
     branches: [master, studio]
     paths:
       - 'apps/studio/**'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
   pull_request:
     branches: [master, studio]
     paths:
       - 'apps/studio/**'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
 
 # Cancel old builds on new commit for same workflow + branch/PR
 concurrency:
@@ -25,29 +25,28 @@ jobs:
     # Uses larger hosted runner as it significantly decreases build times
     runs-on: [larger-runner-4cpu]
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        cmd:
-          - npm run test:studio
-
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
             apps/studio
             packages
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          version: 9.10.0
+          run_install: false
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
       - name: Install deps
-        run: npm ci
+        run: pnpm i
         working-directory: ./
-      - name: Run ${{ matrix.cmd }}
+      - name: Run Tests
         env:
           # Default is 2 GB, increase to have less frequent OOM errors
           NODE_OPTIONS: '--max_old_space_size=3072'
-        run: ${{ matrix.cmd }}
+        run: pnpm run test:studio
         working-directory: ./

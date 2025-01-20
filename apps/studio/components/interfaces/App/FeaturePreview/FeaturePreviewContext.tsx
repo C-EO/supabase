@@ -3,6 +3,25 @@ import { PropsWithChildren, createContext, useContext, useEffect, useState } fro
 
 import { LOCAL_STORAGE_KEYS } from 'lib/constants'
 import { EMPTY_OBJ } from 'lib/void'
+import { APISidePanelPreview } from './APISidePanelPreview'
+import { CLSPreview } from './CLSPreview'
+
+export const FEATURE_PREVIEWS = [
+  {
+    key: LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL,
+    name: 'Project API documentation',
+    content: <APISidePanelPreview />,
+    discussionsUrl: 'https://github.com/orgs/supabase/discussions/18038',
+    isNew: false,
+  },
+  {
+    key: LOCAL_STORAGE_KEYS.UI_PREVIEW_CLS,
+    name: 'Column-level privileges',
+    content: <CLSPreview />,
+    discussionsUrl: 'https://github.com/orgs/supabase/discussions/20295',
+    isNew: false,
+  },
+]
 
 type FeaturePreviewContextType = {
   flags: { [key: string]: boolean }
@@ -14,27 +33,22 @@ const FeaturePreviewContext = createContext<FeaturePreviewContextType>({
   onUpdateFlag: noop,
 })
 
-export default FeaturePreviewContext
-
 export const useFeaturePreviewContext = () => useContext(FeaturePreviewContext)
 
 export const FeaturePreviewContextProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [flags, setFlags] = useState({
-    [LOCAL_STORAGE_KEYS.UI_PREVIEW_NAVIGATION_LAYOUT]: false,
-    [LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL]: false,
-    [LOCAL_STORAGE_KEYS.UI_PREVIEW_RLS_AI_ASSISTANT]: false,
-  })
+  const [flags, setFlags] = useState(() =>
+    FEATURE_PREVIEWS.reduce((a, b) => {
+      return { ...a, [b.key]: false }
+    }, {})
+  )
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setFlags({
-        [LOCAL_STORAGE_KEYS.UI_PREVIEW_NAVIGATION_LAYOUT]:
-          localStorage.getItem(LOCAL_STORAGE_KEYS.UI_PREVIEW_NAVIGATION_LAYOUT) === 'true',
-        [LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL]:
-          localStorage.getItem(LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL) === 'true',
-        [LOCAL_STORAGE_KEYS.UI_PREVIEW_RLS_AI_ASSISTANT]:
-          localStorage.getItem(LOCAL_STORAGE_KEYS.UI_PREVIEW_RLS_AI_ASSISTANT) === 'true',
-      })
+      setFlags(
+        FEATURE_PREVIEWS.reduce((a, b) => {
+          return { ...a, [b.key]: localStorage.getItem(b.key) === 'true' }
+        }, {})
+      )
     }
   }, [])
 
@@ -53,17 +67,13 @@ export const FeaturePreviewContextProvider = ({ children }: PropsWithChildren<{}
 }
 
 // Helpers
-export const useIsNavigationPreviewEnabled = () => {
-  const { flags } = useFeaturePreviewContext()
-  return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_NAVIGATION_LAYOUT]
-}
 
 export const useIsAPIDocsSidePanelEnabled = () => {
   const { flags } = useFeaturePreviewContext()
   return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL]
 }
 
-export const useIsRLSAIAssistantEnabled = () => {
+export const useIsColumnLevelPrivilegesEnabled = () => {
   const { flags } = useFeaturePreviewContext()
-  return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_RLS_AI_ASSISTANT]
+  return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_CLS]
 }
